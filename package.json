@@ -1,0 +1,14 @@
+{
+  "name": "farm-management",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-all": "npm run backend:install && npm run frontend:install",
+    "backend:install": "cd backend/config && npm install",
+    "backend:start": "cd backend/config && npm run dev",
+    "backend:seed": "cd backend/config && npm run seed",
+    "frontend:install": "cd frontend/public && npm install",
+    "frontend:start": "cd frontend/public && npm start",
+    "frontend:build": "cd frontend/public && npm run build"
+  }
+}

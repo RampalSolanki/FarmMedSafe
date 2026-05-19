@@ -1,0 +1,11 @@
+{
+  "name": "farm-management-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "cd config && npm start",
+    "dev": "cd config && npm run dev",
+    "seed": "cd config && npm run seed"
+  }
+}

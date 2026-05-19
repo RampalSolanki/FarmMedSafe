@@ -1,0 +1,10 @@
+{
+  "name": "farm-management-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "cd public && npm start",
+    "build": "cd public && npm run build",
+    "test": "cd public && npm run test"
+  }
+}
