@@ -2,6 +2,7 @@
   "name": "farm-management",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "workspaces": [
     "backend/config",
     "frontend/public"

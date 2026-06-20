@@ -1,15 +1,8 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import morgan from 'morgan';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import authRoutes from './routes/authRoutes.js';
-import animalRoutes from './routes/animalRoutes.js';
-import medicineRoutes from './routes/medicineRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
-import { errorHandler } from './middleware/errorMiddleware.js';
+import createApp from './app.js';
 import connectDB from './db.js';
 
 dotenv.config();
@@ -19,60 +12,7 @@ const __dirname = path.dirname(__filename);
 const frontendBuildPath = path.resolve(__dirname, '../../frontend/public/build');
 const serveFrontend = process.env.NODE_ENV === 'production' && fs.existsSync(frontendBuildPath);
 
-const app = express();
-
-// Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
-
-// Health Check Endpoints (Public)
-app.get('/', (req, res) => {
-  if (serveFrontend) {
-    return res.sendFile(path.join(frontendBuildPath, 'index.html'));
-  }
-
-  res.json({ message: 'Farm Management API is running', status: 'ok' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    database: 'connected'
-  });
-});
-
-// Public API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/animals', animalRoutes);
-app.use('/api/medicines', medicineRoutes);
-app.use('/api/admin', adminRoutes);
-
-if (serveFrontend) {
-  app.use(express.static(frontendBuildPath));
-
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
-      return next();
-    }
-
-    res.sendFile(path.join(frontendBuildPath, 'index.html'));
-  });
-}
-
-// 404 handler for undefined API routes
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-// Error Handler
-app.use(errorHandler);
+const app = createApp({ serveFrontend, frontendBuildPath });
 
 // Start server only after database connection
 const startServer = async () => {
