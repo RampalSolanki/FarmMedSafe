@@ -2,13 +2,19 @@
   "name": "farm-management",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "backend/config",
+    "frontend/public"
+  ],
   "scripts": {
-    "install-all": "npm run backend:install && npm run frontend:install",
-    "backend:install": "cd backend/config && npm install",
-    "backend:start": "cd backend/config && npm run dev",
-    "backend:seed": "cd backend/config && npm run seed",
-    "frontend:install": "cd frontend/public && npm install",
-    "frontend:start": "cd frontend/public && npm start",
-    "frontend:build": "cd frontend/public && npm run build"
+    "install-all": "npm install --workspaces",
+    "start": "npm run start --workspace backend/config",
+    "build": "npm run build --workspace frontend/public",
+    "backend:install": "npm install --workspace backend/config",
+    "backend:start": "npm run dev --workspace backend/config",
+    "backend:seed": "npm run seed --workspace backend/config",
+    "frontend:install": "npm install --workspace frontend/public",
+    "frontend:start": "npm run start --workspace frontend/public",
+    "frontend:build": "npm run build --workspace frontend/public"
   }
 }

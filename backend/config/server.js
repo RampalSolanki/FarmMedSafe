@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import animalRoutes from './routes/animalRoutes.js';
 import medicineRoutes from './routes/medicineRoutes.js';
@@ -10,6 +13,11 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 import connectDB from './db.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendBuildPath = path.resolve(__dirname, '../../frontend/public/build');
+const serveFrontend = process.env.NODE_ENV === 'production' && fs.existsSync(frontendBuildPath);
 
 const app = express();
 
@@ -24,6 +32,10 @@ app.use(morgan('dev'));
 
 // Health Check Endpoints (Public)
 app.get('/', (req, res) => {
+  if (serveFrontend) {
+    return res.sendFile(path.join(frontendBuildPath, 'index.html'));
+  }
+
   res.json({ message: 'Farm Management API is running', status: 'ok' });
 });
 
@@ -41,6 +53,18 @@ app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/admin', adminRoutes);
+
+if (serveFrontend) {
+  app.use(express.static(frontendBuildPath));
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+
+    res.sendFile(path.join(frontendBuildPath, 'index.html'));
+  });
+}
 
 // 404 handler for undefined API routes
 app.use((req, res, next) => {
